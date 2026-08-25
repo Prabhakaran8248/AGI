@@ -7,9 +7,9 @@ def get_vid(q):
     try:
         enc = urllib.parse.quote(q)
         url = f"https://www.youtube.com/results?search_query={enc}"
-        req = urllib.request.Request(url, headers={"user-Agent":"Mozilla/s5.0"})
-        data = urllib.request.urlopen(req, timeout=5).read().decode()
-        ids = re.findall(r"\"videoId\":\"([^\"]\"",data)
+        req = urllib.request.Request(url, headers = {"User-Agent":"Mozilla/5.0"})
+        data = urllib.request.urlopen(req,timeout=5).read().decode()
+        ids = re.findall(r"\"videoId\":\"([^\"]+)\"",data)
         return ids[0] if ids else None
     except Exception:
         return None
@@ -18,29 +18,46 @@ def get_vid(q):
 def home():
     return render_template("index.html")
 
-
 @app.route("/agent",methods=["POST"])
-def ai_agent_router();
-    d = request.get_json(silent=True)
-    if not or("command" not in d and "test_command" not in d):
+def ai_agent_router():
+    d = request.get_json(silent = True)
+    if not d or ("command" not in d and "text_command" not in d):
         abort(400)
 
-cmd_raw = d.get("command") or d.get("text_command")
-cmd = cmd_raw.strip().lower()
+    cmd_raw = d.get("command") or d.get("text_command")
+    cmd = cmd_raw.strip().lower()
+
+    if "youtube" in cmd:
+        q = cmd
+        patterns = [
+            "open youtube and search",
+            "open youtube and play",
+            "open youtube",
+            "and play",
+            "play",
+            "on youtube"
+        ]
+        for p in patterns:
+            q = q.replace(p,"")
+        q = q.strip()
+        vid = get_vid(q)
+        if vid :
+            target = f"https://www.youtube.com/embed/{vid}?autoplay=1&mute=1"
+            msg = f"playing{q}"
+
+elif any(k in cmd for k in ["gmail","email","mail","message"]);
+to ,body ="",""
+clean_ cmd = re.sub{
+   r'^(please\s+)?(gmail|mail|message)\s*',' ' ,
+    cmd
+    ).strip()
 
 
-if "youtube" in cmd:
-    q = cmd
-    patterns = [
-        "open youtube and search",
-        "open youtube and play",
-        "open youtube",
-        "and play",
-        "play",
-        "play",
-        "on youtube",
-    ]
-    for p in patterns :
-        q = q.replace(P, "")
-        
-    
+clean_cmd = sub(r'\bcom(and|mand)?)\b', 'com',elean_cmd)
+
+
+parts = re.split(r'\b(type|writ|saying|message|content|with body)\b',clean_cmd)
+recip_part = part[0].strip()
+
+recip_part = re.sub(r'^(update\s+to|to|send\s+to|and\s+update\s+to)\s*',' ',recip_part).strip()
+            
